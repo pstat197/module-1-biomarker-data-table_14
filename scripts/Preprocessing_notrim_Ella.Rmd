@@ -5,7 +5,11 @@ output: html_document
 
 ```{r, warning = FALSE}
 library(tidyverse)
+library(ggplot2)
+library(dplyr)
+```
 
+```{r, warning = FALSE}
 #get names
 var_names <- read_csv('../data/biomarker-raw.csv', 
                      col_names = FALSE, 
@@ -43,3 +47,67 @@ biomarker_clean_notrim <- read_csv('../data/biomarker-raw.csv',
 save(list = 'biomarker_clean_notrim', 
      file = '../data/biomarker-clean-NOTRIM.RData')
 ```
+
+
+# Difference between 
+
+```{r}
+diff_summary <- summary(abs(biomarker_clean_notrim[,-c(1,2)] - biomarker_clean[,-c(1,2)]))
+diff_summary
+
+data_numeric <- biomarker_clean_notrim %>%
+  select(-group, -ados)
+
+outlier_count <- apply(data_numeric, 1, function(x) sum(abs(x) > 3, na.rm = TRUE))
+outlier_table <- tibble(
+  group = biomarker_clean_notrim$group,
+  outlier_count = outlier_count
+)
+
+summary(outlier_table$outlier_count)
+table(outlier_table$group)
+
+outlier_summary <- outlier_table %>%
+  group_by(group) %>%
+  summarise(
+    mean_outliers = mean(outlier_count),
+    median_outliers = median(outlier_count),
+    max_outliers = max(outlier_count)
+  )
+
+outlier_summary
+
+# Figure x
+group_means <- outlier_table %>%
+  group_by(group) %>%
+  summarise(
+    mean_outliers = mean(outlier_count),
+    se_outliers = sd(outlier_count)/sqrt(n())
+  )
+
+ggplot(group_means, aes(x = group, y = mean_outliers, fill = group)) +
+  geom_col(alpha = 0.6) +
+  geom_errorbar(aes(ymin = mean_outliers - se_outliers,
+                    ymax = mean_outliers + se_outliers),
+                width = 0.2) +
+  theme_minimal() +
+  labs(
+    title = "Average Number of Outlying Proteins per Subject",
+    x = "Group",
+    y = "Mean ± SE of Outlier Counts"
+  ) +
+  theme(legend.position = "none")
+
+```
+
+# summary 
+
+To explore the influence of trimming, we repeated preprocessing without removing extreme values (|z| ${>}$3).
+For each subject, we counted the number of protein measurements whose standardized
+log-transformed value exceeded ${\pm}$3.
+This allowed us to identify subjects with unusually large numbers of outlying proteins.
+On average, TD subjects had slightly more outlying protein values (mean = 17.6) than ASD subjects (mean = 13.3), though medians were identical (8.5).
+
+This indicates that while a few TD participants show many extreme measurements, group-level differences are small.
+
+Figure X shows the mean ${\pm}$SE of outlier counts per subject by group.
