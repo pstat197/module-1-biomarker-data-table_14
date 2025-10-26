@@ -60,3 +60,5 @@ raw %>%
 The main reason for log-transforming the protein levels is that the raw concentration values are highly right-skewed. Most proteins have low to moderate expression levels, but a few subjects show extremely large values. Such long-tailed distribution violate common statistical model assumption such as normality and equal vairance, and give excessive influence to those few extreme points.
 
 By taking the logarithm of the values, we compress the large numbers, expand the small numbers and make the distribution more symmetric and approximately normal. This stabilizes the variance across proteins and across subjects, allowing linear models, t-tests, correlations, and other parametric methods to perform more reliably and comparably across proteins.
+
+
