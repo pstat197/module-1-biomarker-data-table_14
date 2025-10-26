@@ -1,0 +1,45 @@
+---
+title: "Preprocessing_notrim_Ella"
+output: html_document
+---
+
+```{r, warning = FALSE}
+library(tidyverse)
+
+#get names
+var_names <- read_csv('../data/biomarker-raw.csv', 
+                     col_names = FALSE, 
+                     n_max = 2, 
+                     col_select = -(1:2)) %>%
+  t() %>%
+  as_tibble() %>%
+  rename(name = V1, abbreviation = V2) %>%
+  na.omit()
+
+# No trim
+trim <- function(x, .at){
+  x[abs(x) > .at] <- sign(x[abs(x) > .at]) * .at
+  return(x)
+}
+
+# log + scale
+biomarker_clean_notrim <- read_csv('../data/biomarker-raw.csv', 
+         skip = 2,
+         col_select = -2L,
+         col_names = c('group', 
+                       'empty',
+                       pull(var_names, abbreviation),
+                       'ados'),
+         na = c('-', '')) %>%
+  filter(!is.na(group)) %>%
+  # log-transform + standardize only
+  mutate(across(.cols = -c(group, ados), 
+                ~ scale(log10(.x))[, 1])) %>%
+  # reorder columns
+  select(group, ados, everything())
+
+# Save as no dataset
+
+save(list = 'biomarker_clean_notrim', 
+     file = '../data/biomarker-clean-NOTRIM.RData')
+```
