@@ -27,7 +27,7 @@ trim <- function(x, .at){
 }
 
 # log + scale
-biomarker_clean_notrim <- read_csv('../data/biomarker-raw.csv', 
+biomarker_clean_notrim <- read_csv('/Users/lucycao/Desktop/pstat 122/module-1-biomarker-data-table_14/data/biomarker-raw.csv', 
          skip = 2,
          col_select = -2L,
          col_names = c('group', 

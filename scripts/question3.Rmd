@@ -13,7 +13,7 @@ library(randomForest)
 library(tidymodels)
 library(modelr)
 library(yardstick)
-load('/Users/jiangyibing/Desktop/PSTAT197A/module1/data/biomarker-clean.RData')
+load('/Users/lucycao/Desktop/pstat 122/module-1-biomarker-data-table_14/data/biomarker-clean.RData')
 ```
 
 ```{r}
