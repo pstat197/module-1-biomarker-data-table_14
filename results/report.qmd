@@ -29,7 +29,7 @@ This report revisits a public serum-proteomics dataset to explore candidate earl
 
 Source and access. The analysis uses the publicly available serum proteomics matrix associated with Hewitson et al. (2021), accessed for the course in August 2022. Unlike the original paper, our workflow retains the 192 “unidentified” proteins to make the screening step more stringent and to test robustness to broader feature sets.
 
-Sample and measures. The analytic file contains 154 participants: 76 ASD and 78 typically developing (TD) controls. Each row is a participant; columns include serum protein intensities (1,317 protein features in this copy) plus minimal metadata (e.g., Group) and a clinical-severity measure (ADOS Total Score). Raw intensities are strongly right-skewed and vary on a multiplicative scale, so we analyze log-transformed values to stabilize variance and reduce the leverage of extreme highs. After cleaning, protein values have ~0% missingness (the small fraction in the raw file came from a blank separator row); outliers are trimmed by default using a simple rule, with a no-trim variant used for sensitivity checks reported below.
+Sample and measures. The analytic file contains 154 participants: 76 ASD and 78 typically developing (TD) controls. Each row is a participant; columns include serum protein intensities (1,317 protein features in this copy) plus minimal metadata (e.g., Group) and a clinical-severity measure (ADOS Total Score). Raw intensities are strongly right-skewed and vary on a multiplicative scale, so we analyze log-transformed values to stabilize variance and reduce the leverage of extreme highs. After cleaning, protein values have \~0% missingness (the small fraction in the raw file came from a blank separator row); outliers are trimmed by default using a simple rule, with a no-trim variant used for sensitivity checks reported below.
 
 ## Summary of published analysis
 
@@ -95,7 +95,7 @@ Overall, our team’s experiments show how methodological choices can shift both
 
 The ROC–AUC results for protein panels ranging from 10 to 20 features show that performance improves steadily up to about 17 features. The **fuzzy intersection (union)** approach consistently outperformed the **hard intersection**, achieving AUC values close to 0.89 versus near 0.10–0.12 for the strict overlap. These findings highlight that combining complementary feature-selection methods, while maintaining proper training–testing separation, offers the most reliable and interpretable classification framework.
 
-**Improved classifier**
+### Improved classifier
 
 Building on the previous sensitivity tests, we aimed to refine our model to achieve strong predictive performance with greater interpretability. Specifically, we compared two goals: developing a **simpler panel** that performs comparably to the in-class model, and constructing an **alternative panel** that improves classification accuracy through methodological adjustments.
 
