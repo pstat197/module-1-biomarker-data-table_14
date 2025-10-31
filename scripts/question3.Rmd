@@ -172,7 +172,6 @@ for (i in seq_along(ns)) {
 }
 
 print(roc_results)
-
 ```
 
 Conclusion: n=17 for each method is the best one, we take union, so there are 26 proteins used in the final model.
