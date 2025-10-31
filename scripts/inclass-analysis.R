@@ -85,19 +85,23 @@ set.seed(101422)
 biomarker_split <- biomarker_sstar %>%
   initial_split(prop = 0.8)
 
-# fit logistic regression model to training set
 fit <- glm(class ~ ., 
            data = training(biomarker_split), 
            family = 'binomial')
 
-# evaluate errors on test set
-class_metrics <- metric_set(sensitivity, 
-                            specificity, 
-                            accuracy,
-                            roc_auc)
 
-testing(biomarker_split) %>%
-  add_predictions(fit, type = 'response') %>%
-  class_metrics(estimate = factor(pred > 0.5),
-              truth = factor(class), pred,
-              event_level = 'second')
+test_df <- testing(biomarker_split) %>%
+  mutate(
+    class = factor(class, levels = c(FALSE, TRUE)),   # 👈 convert truth to factor
+    pred = predict(fit, newdata = ., type = "response"),
+    pred_class = factor(if_else(pred > 0.5, TRUE, FALSE), levels = c(FALSE, TRUE))
+  )
+
+class_metrics <- metric_set(sensitivity, specificity, accuracy, roc_auc)
+
+class_metrics(
+  test_df,
+  truth = class,
+  estimate = pred_class,
+  pred
+)

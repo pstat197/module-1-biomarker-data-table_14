@@ -1,0 +1,64 @@
+---
+title: "question_1"
+author: "Shenyi Jiang"
+date: "2025-10-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r}
+library(tidyverse)
+raw <- read_csv("data/biomarker-raw.csv")
+```
+
+```{r}
+# non-protein columns
+meta_cols <- c("Group", "Target Full Name")
+# protein columns
+protein_cols <- setdiff(names(raw)[map_lgl(raw, is.numeric)], meta_cols)
+```
+
+```{r}
+set.seed(1026)
+sample_cols <- sample(protein_cols, min(6, length(protein_cols)))
+```
+
+```{r}
+# original data
+raw %>%
+  pivot_longer(all_of(sample_cols), names_to = "protein", values_to = "value") %>%
+  ggplot(aes(x=value)) +
+  geom_density(fill="skyblue") +
+  facet_wrap(~protein, scales="free") +
+  labs(titl="Raw Protein Level Distributions", 
+       x = "Protein level",
+       y = "Density") +
+  theme_minimal(base_size=12)
+```
+
+```{r}
+# log-transforming data
+raw %>%
+  pivot_longer(all_of(sample_cols), names_to = "protein", values_to = "value") %>%
+  filter(is.finite(value)) %>%
+  mutate(log_value = log10(value),
+         scaled_value = as.numeric(scale(log_value))
+         ) %>%
+  ggplot(aes(x=scaled_value)) +
+  geom_density(fill="lightcoral") +
+  facet_wrap(~protein, scales="free") +
+  labs(titl="Log-transformed Protein Level Distributions", 
+       x = "Protein level",
+       y = "Density") +
+  theme_minimal(base_size=12)
+```
+
+The main reason for log-transforming the protein levels is that the raw concentration values are highly right-skewed. Most proteins have low to moderate expression levels, but a few subjects show extremely large values. Such long-tailed distribution violate common statistical model assumption such as normality and equal vairance, and give excessive influence to those few extreme points.
+
+By taking the logarithm of the values, we compress the large numbers, expand the small numbers and make the distribution more symmetric and approximately normal. This stabilizes the variance across proteins and across subjects, allowing linear models, t-tests, correlations, and other parametric methods to perform more reliably and comparably across proteins.
+
+
